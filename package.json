@@ -1,12 +1,20 @@
 {
   "name": "react-datetimepicker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Datetimepicker component for React",
   "main": "dist/DateTimePicker.js",
+  "homepage": "https://github.com/kraf/react-datetimepicker",
+  "bugs": {
+    "url": "https://github.com/kraf/react-datetimepicker/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/kraf/react-datetimepicker"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
+  "author": "Filip Krasnianski",
   "license": "ISC",
   "dependencies": {
     "moment": "^2.8.3",
