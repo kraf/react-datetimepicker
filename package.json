@@ -1,0 +1,22 @@
+{
+  "name": "react-datetimepicker",
+  "version": "1.0.0",
+  "description": "Datetimepicker component for React",
+  "main": "dist/DateTimePicker.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "moment": "^2.8.3",
+    "react": "^0.11.2"
+  },
+  "devDependencies": {
+    "es6ify": "^1.4.0",
+    "reactify": "^0.14.0",
+    "watchify": "~1.0.6",
+    "node-static": "~0.7.6",
+    "react-tools": "~0.11.2"
+  }
+}

@@ -1,0 +1,97 @@
+body {
+	font-size: 16px;
+}
+
+@disabledColor: #f1666c;
+@otherMonthColor: #ccc;
+@selectedBackgroundColor: #444;
+@selectedTextColor: #fff;
+@todayOutlineColor: #444;
+@dayTextColor: #000;
+@timePickerBackgroundColor: #444;
+@timePickerTextColor: #fff;
+
+.date-picker {
+	display: inline-block;
+	text-align: center;
+
+	td, th {
+		padding: 5px;
+	}
+
+	.previous-month {
+		float: left;
+	}
+	.month-label {
+		display: inline-block;
+		font-size: 18px;
+		line-height: 22px;
+	}
+	.next-month {
+		float: right;
+	}
+	button.previous-month, button.next-month {
+		cursor: pointer;
+		background: none;
+		border: none;
+		outline: none;
+	}
+
+	td.day {
+		&.prev a, &.next a {
+			color: @otherMonthColor;
+		}
+
+		&.disabled a {
+			color: @disabledColor;
+			cursor: default;
+		}
+
+		&.selected {
+			background-color: @selectedBackgroundColor;
+
+			a {
+				color: @selectedTextColor;
+			}
+		}
+
+		&.today {
+			outline: 1px solid @todayOutlineColor;
+		}
+
+		a {
+			cursor: pointer;
+			text-decoration: none;
+			color: @dayTextColor;
+		}
+	}
+}
+
+.time-picker {
+	select {
+		border: 0;
+		padding: 2px 16px;
+		font-size: 14px;
+		background-color: @timePickerBackgroundColor;
+		color: @timePickerTextColor;
+	}
+}
+
+.date-picker-wrapper {
+	position: relative;
+
+	.date-picker {
+		position: absolute;
+		top: 25px;
+		left: 2px;
+		border: 1px solid black;
+
+		&.hidden {
+			display: none;
+		}
+
+		td, th {
+			padding: 2px;
+		}
+	}
+}

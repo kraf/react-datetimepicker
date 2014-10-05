@@ -1,0 +1,15 @@
+{
+	"newcap": false,
+	"unused": true,
+	"undef": true,
+	"browser": true,
+	"browserify": true,
+	"globalstrict": true,
+	"esnext": true,
+	"loopfunc": true,
+	"globals": {
+		"require": false,
+		"module": false,
+		"console": false
+	}
+}
