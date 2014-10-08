@@ -53,7 +53,8 @@ var Days = React.createClass({displayName: 'Days',
 
 			var isSelected = false;
 			if(this.props.selectedDate) {
-				isSelected = thisDate.isSame(this.props.selectedDate);
+				var selectedDate = this.props.selectedDate.startOf('day').clone();
+				isSelected = thisDate.isSame(selectedDate);
 			}
 
 			thisRow.push(Day({date: thisDate.clone(), 

@@ -1,7 +1,7 @@
 About
 =====
 
-Simple datetimepicker for use with React and Browserify. I was unhappy with the alternatives and needed something with almost no dependencies. The only dependency is _moment_ (and _React_ obviously).
+Simple datetimepicker for use with React and Browserify. The only dependencies are _moment_ and _React_. The styling is minimal and needs to be adapted to the use case.
 
 ![Screenshot](https://raw.githubusercontent.com/kraf/react-datetimepicker/master/screenshot.jpg)
 

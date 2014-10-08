@@ -2,9 +2,9 @@
 // test app for datepicker
 
 var React = require('react');
-var DatePicker = require('../src/DateTimePicker.jsx');
+var DatePicker = require('../src/DateTimePicker');
 
 window.datePicker = React.renderComponent(
-	<DatePicker />,
+	<DatePicker onChange={console.log.bind(console)} />,
 	document.getElementById('container')
 );

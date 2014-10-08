@@ -13,7 +13,8 @@ var DateTimePicker = React.createClass({
 	getInitialState() {
 		return {
 			currentMonth: moment(),
-			visible: !this.props.inputMode
+			visible: !this.props.inputMode,
+			minutes: 0
 		};
 	},
 
@@ -76,7 +77,7 @@ var DateTimePicker = React.createClass({
 		if(this.props.inputMode) {
 			return <div className="date-picker-wrapper">
 				<input type="text" 
-					onFocus={this._handleInputFocused} 
+					onClick={this._handleInputClick} 
 					value={this.getFormattedValue()}
 					readOnly={true} />
 
@@ -98,13 +99,12 @@ var DateTimePicker = React.createClass({
 			return null;
 		}
 
-		var date = this.state.selectedDate.clone();
-
+		var selectedDate = this.state.selectedDate.clone();
 		if(this.props.time) {
-			var minutes = this.refs.timePicker.getValue();
-			date.add(minutes, 'minutes');
+			selectedDate.add(this.state.minutes, 'minutes');
 		}
-		return date;
+
+		return selectedDate;
 	},
 
 	getFormattedValue() {
@@ -146,14 +146,23 @@ var DateTimePicker = React.createClass({
 	},
 
 	_handleTimeChange() {
-		this._emitChange();
-		if(this.state.selectedDate) {
-			this.setState({ visible: false });
+		var minutes = this.refs.timePicker.getValue();
+		if(minutes >= 24*60) {
+			throw new Error("The returned amount of minutes would change the date.");
 		}
+		this.setState({ minutes: minutes }, () => {
+			if(!this.props.inputMode) {
+				this._emitChange();
+			}
+		});
 	},
 
-	_handleInputFocused() {
-		this.setState({ visible: true });
+	_handleInputClick() {
+		if(this.state.visible) {
+			this.setState({ visible: false }, this._emitChange);
+		} else {
+			this.setState({ visible: true });
+		}
 	},
 
 	_emitChange() {
@@ -163,15 +172,14 @@ var DateTimePicker = React.createClass({
 	},
 
 	_handleDayChange(date) {
-		var newState = {
-			selectedDate: date
-		};
-
-		if(this.props.inputMode) {
-			newState.visible = false;
-		}
-
-		this.setState(newState, this._emitChange);
+		this.setState({ selectedDate: date }, () => {
+			if(!this.props.inputMode) {
+				this._emitChange();
+			} else if(!this.props.time) {
+				this._emitChange();
+				this.setState({ visible: false });
+			}
+		});
 	}
 });
 

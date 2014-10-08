@@ -38,42 +38,43 @@ body {
 	}
 
 	td.day {
-		&.prev a, &.next a {
+		cursor: pointer;
+		color: @dayTextColor;
+
+		&.prev, &.next {
 			color: @otherMonthColor;
 		}
 
-		&.disabled a {
+		&.disabled {
 			color: @disabledColor;
 			cursor: default;
 		}
 
 		&.selected {
 			background-color: @selectedBackgroundColor;
-
-			a {
-				color: @selectedTextColor;
-			}
+			color: @selectedTextColor;
 		}
 
 		&.today {
 			outline: 1px solid @todayOutlineColor;
 		}
-
-		a {
-			cursor: pointer;
-			text-decoration: none;
-			color: @dayTextColor;
-		}
 	}
 }
 
 .time-picker {
-	select {
-		border: 0;
-		padding: 2px 16px;
-		font-size: 14px;
-		background-color: @timePickerBackgroundColor;
-		color: @timePickerTextColor;
+	text-align: left;
+
+	input {
+		margin: 0 0 0 10px;
+		height: 23px;
+	}
+	span {
+		vertical-align: top;
+		display: inline-block;
+		height: 23px;
+		line-height: 23px;
+		font-weight: bold;
+		margin-left: 8px;
 	}
 }
 

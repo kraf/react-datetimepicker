@@ -15,41 +15,55 @@ function toTimePartString(timepart) {
 	}
 }
 
-function formatMinutes(minutes) {
-	var hourPart = Math.floor(minutes / 60);
-	var minutePart = minutes % 60;
-	
-	return toTimePartString(hourPart) + ":" + toTimePartString(minutePart);
-}
-
 var TimePicker = React.createClass({displayName: 'TimePicker',
 
-	getDefaultProps:function() {
+	getInitialState:function() {
 		return {
-			timeInterval: 30 // minutes
+			hours: 0,
+			minutes: 0
 		};
 	},
 
 	render:function() {
-		var items = [];
-		for(var ii=0; ii<DAY_MINUTES; ii+=this.props.timeInterval) {
-			var value = formatMinutes(ii);
-			items.push(React.DOM.option({key: ii, value: ii}, value));
-		}
-
 		return React.DOM.div({className: "time-picker"}, 
-			React.DOM.select({ref: "select", onChange: this._handleChange}, 
-				items
+			React.DOM.div({className: "hours"}, 
+				React.DOM.input({
+					id: "hours", 
+					type: "range", 
+					ref: "hours", 
+					min: 0, 
+					max: 23, 
+					value: this.state.hours, 
+					onChange: this._handleChange}), 
+				React.DOM.span(null, toTimePartString(this.state.hours))
+			), 
+
+			React.DOM.div({className: "minutes"}, 
+				React.DOM.input({
+					id: "minutes", 
+					type: "range", 
+					ref: "minutes", 
+					min: 0, 
+					max: 59, 
+					value: this.state.minutes, 
+					onChange: this._handleChange}), 
+				React.DOM.span(null, toTimePartString(this.state.minutes))
 			)
 		);
 	},
 
 	getValue:function() {
-		return parseInt(this.refs.select.getDOMNode().value, 10);
+		return this.state.hours * 60 + this.state.minutes;
 	},
 
 	_handleChange:function() {
-		this.props.onChange(this.getValue());
+		var hours = parseInt(this.refs.hours.getDOMNode().value, 10);
+		var minutes = parseInt(this.refs.minutes.getDOMNode().value, 10);
+
+		this.setState({
+			hours: hours,
+			minutes: minutes
+		}, this.props.onChange);
 	}
 });
 
