@@ -14,7 +14,8 @@ var DateTimePicker = React.createClass({
 		return {
 			currentMonth: moment(),
 			visible: !this.props.inputMode,
-			minutes: 0
+			minutes: 0,
+			selectedDate: this.props.selectedDate
 		};
 	},
 
@@ -45,7 +46,7 @@ var DateTimePicker = React.createClass({
 			timePicker = <TimePicker ref="timePicker" onChange={this._handleTimeChange} />;
 		}
 
-		var datePicker = <div className={this._getClass()}>
+		var datePicker = <div className={this._getClass()} onClick={this._handleClick}>
 			<div className="month-header">
 				<button className="previous-month" onClick={this._handlePrev}>
 					{"<"}
@@ -88,9 +89,26 @@ var DateTimePicker = React.createClass({
 		}
 	},
 
+	componentWillUnmount() {
+		if(this.state.visible) {
+			document.removeEventListener('click', this._handleOutsideClick);
+		}
+	},
+
 	componentWillReceiveProps: function(nextProps) {
 		if(this.props.inputMode && !nextProps.inputMode) {
 			this.setState({ visible: true });
+			return;
+		}
+	},
+
+	componentDidUpdate(prevProps, prevState) {
+		if(prevState.visible !== this.state.visible) {
+			if(this.state.visible) {
+				document.addEventListener('click', this._handleOutsideClick);
+			} else {
+				document.removeEventListener('click', this._handleOutsideClick);
+			}
 		}
 	},
 
@@ -145,6 +163,10 @@ var DateTimePicker = React.createClass({
 		});
 	},
 
+	_handleClick(ev) {
+		ev.nativeEvent.stopImmediatePropagation();
+	},
+
 	_handleTimeChange() {
 		var minutes = this.refs.timePicker.getValue();
 		if(minutes >= 24*60) {
@@ -162,6 +184,12 @@ var DateTimePicker = React.createClass({
 			this.setState({ visible: false }, this._emitChange);
 		} else {
 			this.setState({ visible: true });
+		}
+	},
+
+	_handleOutsideClick() {
+		if(this.state.visible) {
+			this.setState({ visible: false }, this._emitChange);
 		}
 	},
 

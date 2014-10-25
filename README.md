@@ -15,7 +15,7 @@ Usage
 API
 ===
 
-Properties with defaults
+Properties with defaults (all optional)
 ------------------------
 
 ```
@@ -24,6 +24,7 @@ time=true
 inputMode=true
 dateFormat='YYYY-MM-DD' // used for input when time is set to false
 dateTimeFormat='YYYY-MM-DD HH:mm' // used for input when time is set to true
+selectedDate=undefined // moment object for initial selection
 onChange=undefined // Gets invoked when selection changes
 ```
 
