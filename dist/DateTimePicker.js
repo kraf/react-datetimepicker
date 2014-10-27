@@ -14,7 +14,8 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		return {
 			currentMonth: moment(),
 			visible: !this.props.inputMode,
-			minutes: 0
+			minutes: 0,
+			selectedDate: this.props.selectedDate
 		};
 	},
 
@@ -45,7 +46,7 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			timePicker = TimePicker({ref: "timePicker", onChange: this._handleTimeChange});
 		}
 
-		var datePicker = React.DOM.div({className: this._getClass()}, 
+		var datePicker = React.DOM.div({className: this._getClass(), onClick: this._handleClick}, 
 			React.DOM.div({className: "month-header"}, 
 				React.DOM.button({className: "previous-month", onClick: this._handlePrev}, 
 					"<"
@@ -88,9 +89,33 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		}
 	},
 
+	componentWillUnmount:function() {
+		if(this.state.visible) {
+			document.removeEventListener('click', this._handleOutsideClick);
+		}
+	},
+
 	componentWillReceiveProps: function(nextProps) {
+		var updatedState = {};
+
+		if(this.props.selectedDate !== nextProps.selectedDate) {
+			if(nextProps.selectedDate) {
+				updatedState.selectedDate = nextProps.selectedDate;
+			}
+		}
 		if(this.props.inputMode && !nextProps.inputMode) {
-			this.setState({ visible: true });
+			updatedState.visible = true;
+		}
+		this.setState(updatedState);
+	},
+
+	componentDidUpdate:function(prevProps, prevState) {
+		if(prevState.visible !== this.state.visible) {
+			if(this.state.visible) {
+				document.addEventListener('click', this._handleOutsideClick);
+			} else {
+				document.removeEventListener('click', this._handleOutsideClick);
+			}
 		}
 	},
 
@@ -145,6 +170,10 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		});
 	},
 
+	_handleClick:function(ev) {
+		ev.nativeEvent.stopImmediatePropagation();
+	},
+
 	_handleTimeChange:function() {
 		var minutes = this.refs.timePicker.getValue();
 		if(minutes >= 24*60) {
@@ -162,6 +191,12 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 			this.setState({ visible: false }, this._emitChange);
 		} else {
 			this.setState({ visible: true });
+		}
+	},
+
+	_handleOutsideClick:function() {
+		if(this.state.visible) {
+			this.setState({ visible: false }, this._emitChange);
 		}
 	},
 

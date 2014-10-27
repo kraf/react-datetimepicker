@@ -96,10 +96,17 @@ var DateTimePicker = React.createClass({
 	},
 
 	componentWillReceiveProps: function(nextProps) {
-		if(this.props.inputMode && !nextProps.inputMode) {
-			this.setState({ visible: true });
-			return;
+		var updatedState = {};
+
+		if(this.props.selectedDate !== nextProps.selectedDate) {
+			if(nextProps.selectedDate) {
+				updatedState.selectedDate = nextProps.selectedDate;
+			}
 		}
+		if(this.props.inputMode && !nextProps.inputMode) {
+			updatedState.visible = true;
+		}
+		this.setState(updatedState);
 	},
 
 	componentDidUpdate(prevProps, prevState) {
