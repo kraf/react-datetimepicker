@@ -6,7 +6,7 @@ var React = require("react");
 
 var Day = React.createClass({displayName: 'Day',
 	render:function() {
-		return React.DOM.td({className: this._getClass(), onClick: this._handleDayClick}, 
+		return React.createElement("td", {className: this._getClass(), onClick: this._handleDayClick}, 
 			this.props.date.date()
 		);
 	},

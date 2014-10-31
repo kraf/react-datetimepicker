@@ -38,32 +38,32 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		}
 
 		var dayColumnHeaderCaptions = weekDays.map(function(day)  {
-			return React.DOM.th({key: day}, day);
+			return React.createElement("th", {key: day}, day);
 		});
 
 		var timePicker = null;
 		if(this.props.time) {
-			timePicker = TimePicker({ref: "timePicker", onChange: this._handleTimeChange});
+			timePicker = React.createElement(TimePicker, {ref: "timePicker", onChange: this._handleTimeChange});
 		}
 
-		var datePicker = React.DOM.div({className: this._getClass(), onClick: this._handleClick}, 
-			React.DOM.div({className: "month-header"}, 
-				React.DOM.button({className: "previous-month", onClick: this._handlePrev}, 
+		var datePicker = React.createElement("div", {className: this._getClass(), onClick: this._handleClick}, 
+			React.createElement("div", {className: "month-header"}, 
+				React.createElement("button", {className: "previous-month", onClick: this._handlePrev}, 
 					"<"
 				), 
-				React.DOM.div({className: "month-label"}, 
+				React.createElement("div", {className: "month-label"}, 
 					this.state.currentMonth.format('MMMM YYYY')
 				), 
-				React.DOM.button({className: "next-month", onClick: this._handleNext}, 
+				React.createElement("button", {className: "next-month", onClick: this._handleNext}, 
 					">"
 				)
 			), 
-			React.DOM.div(null, 
-			React.DOM.table({className: "days"}, 
-				React.DOM.thead(null, 
-					React.DOM.tr(null, dayColumnHeaderCaptions)
+			React.createElement("div", null, 
+			React.createElement("table", {className: "days"}, 
+				React.createElement("thead", null, 
+					React.createElement("tr", null, dayColumnHeaderCaptions)
 				), 
-				Days({
+				React.createElement(Days, {
 					month: this.state.currentMonth, 
 					weekStart: this.props.weekStart, 
 					selectedDate: this.state.selectedDate, 
@@ -76,8 +76,8 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		);
 
 		if(this.props.inputMode) {
-			return React.DOM.div({className: "date-picker-wrapper"}, 
-				React.DOM.input({type: "text", 
+			return React.createElement("div", {className: "date-picker-wrapper"}, 
+				React.createElement("input", {type: "text", 
 					onClick: this._handleInputClick, 
 					value: this.getFormattedValue(), 
 					readOnly: true}), 

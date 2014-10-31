@@ -25,9 +25,9 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 	},
 
 	render:function() {
-		return React.DOM.div({className: "time-picker"}, 
-			React.DOM.div({className: "hours"}, 
-				React.DOM.input({
+		return React.createElement("div", {className: "time-picker"}, 
+			React.createElement("div", {className: "hours"}, 
+				React.createElement("input", {
 					id: "hours", 
 					type: "range", 
 					ref: "hours", 
@@ -35,11 +35,11 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 					max: 23, 
 					value: this.state.hours, 
 					onChange: this._handleChange}), 
-				React.DOM.span(null, toTimePartString(this.state.hours))
+				React.createElement("span", null, toTimePartString(this.state.hours))
 			), 
 
-			React.DOM.div({className: "minutes"}, 
-				React.DOM.input({
+			React.createElement("div", {className: "minutes"}, 
+				React.createElement("input", {
 					id: "minutes", 
 					type: "range", 
 					ref: "minutes", 
@@ -47,7 +47,7 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 					max: 59, 
 					value: this.state.minutes, 
 					onChange: this._handleChange}), 
-				React.DOM.span(null, toTimePartString(this.state.minutes))
+				React.createElement("span", null, toTimePartString(this.state.minutes))
 			)
 		);
 	},

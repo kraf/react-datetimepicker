@@ -57,7 +57,7 @@ var Days = React.createClass({displayName: 'Days',
 				isSelected = thisDate.isSame(selectedDate);
 			}
 
-			thisRow.push(Day({date: thisDate.clone(), 
+			thisRow.push(React.createElement(Day, {date: thisDate.clone(), 
 						 key: thisDate.valueOf(), 
 						 cssClass: cssClass, 
 						 selected: isSelected, 
@@ -73,12 +73,12 @@ var Days = React.createClass({displayName: 'Days',
 			 * XXX Adding index as key to get rid of Reacts
 			 *     warnings. Does this make sense here?
 			 */
-			return React.DOM.tr({key: rowIndex}, 
+			return React.createElement("tr", {key: rowIndex}, 
 				row
 			);
 		});
 
-		return React.DOM.tbody(null, 
+		return React.createElement("tbody", null, 
 			domRows
 		);
 	}
