@@ -22,11 +22,18 @@ var Days = React.createClass({
 
 		// we want stopDate to be 1 day higher than the last
 		// day to be rendered, so we can use moment#isBefore
-		var add = (weekStart - lastOfMonth.day()) % 7;
-		add = add < 0 ? add + 7 : add;
-		var stopDate = lastOfMonth.clone().add(
-			add, 'days'
-		);
+		var stopDate;
+		if(weekStart === lastOfMonth.day()) {
+			stopDate = lastOfMonth.clone().add(
+				7, 'days'
+			);
+		} else {
+			var add = (weekStart - lastOfMonth.day()) % 7;
+			add = add < 0 ? add + 7 : add;
+			stopDate = lastOfMonth.clone().add(
+				add, 'days'
+			);
+		}
 
 		var rows = [];
 		var thisRow = null;
