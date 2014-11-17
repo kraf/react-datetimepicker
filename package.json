@@ -1,6 +1,6 @@
 {
   "name": "react-datetimepicker",
-  "version": "1.0.7",
+  "version": "1.0.8",
   "description": "Datetimepicker component for React",
   "main": "dist/DateTimePicker.js",
   "homepage": "https://github.com/kraf/react-datetimepicker",
