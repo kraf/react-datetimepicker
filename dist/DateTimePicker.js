@@ -11,10 +11,17 @@ var TimePicker = require("./TimePicker");
 var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 	getInitialState:function() {
+		var minutes = 0;
+		var selectedDate = this.props.selectedDate;
+		if(selectedDate) {
+			minutes = selectedDate.hours() * 60 + selectedDate.minutes();
+		}
+
 		return {
 			currentMonth: moment(),
 			visible: !this.props.inputMode,
-			selectedDate: this.props.selectedDate
+			selectedDate: selectedDate,
+			minutes: minutes
 		};
 	},
 
@@ -42,7 +49,10 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 		var timePicker = null;
 		if(this.props.time) {
-			timePicker = React.createElement(TimePicker, {ref: "timePicker", onChange: this._handleTimeChange});
+			timePicker = React.createElement(TimePicker, {
+				minutes: this.state.minutes, 
+				ref: "timePicker", 
+				onChange: this._handleTimeChange});
 		}
 
 		var datePicker = React.createElement("div", {className: this._getClass(), onClick: this._handleClick}, 
@@ -100,6 +110,9 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		if(this.props.selectedDate !== nextProps.selectedDate) {
 			if(nextProps.selectedDate) {
 				updatedState.selectedDate = nextProps.selectedDate;
+				updatedState.minutes =
+					nextProps.selectedDate.hours() * 60 +
+					nextProps.selectedDate.minutes();
 			}
 		}
 		if(this.props.inputMode && !nextProps.inputMode) {
@@ -124,9 +137,8 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		}
 
 		var selectedDate = this.state.selectedDate.clone().startOf('day');
-		if(this.props.time && this.refs.timePicker) {
-			var minutes = this.refs.timePicker.getValue();
-			selectedDate.add(minutes, 'minutes');
+		if(this.props.time) {
+			selectedDate.add(this.state.minutes, 'minutes');
 		}
 
 		return selectedDate;
@@ -146,14 +158,11 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 
 	setValue:function(date) {
 		var momentDate = date._isAMomentObject ? date : moment(date);
-
-		if(this.props.time) {
-			var minutes = momentDate.hours() * 60 + momentDate.minutes();
-			this.refs.timePicker.setValue(minutes);
-		}
+		var minutes = momentDate.hours() * 60 + momentDate.minutes();
 
 		this.setState({
-			selectedDate: momentDate.clone().startOf('day')
+			selectedDate: momentDate.clone().startOf('day'),
+			minutes: minutes
 		});
 	},
 
@@ -187,10 +196,14 @@ var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
 		ev.nativeEvent.stopImmediatePropagation();
 	},
 
-	_handleTimeChange:function() {
-		if(!this.props.inputMode) {
-			this._emitChange();
-		}
+	_handleTimeChange:function(newMinutes) {
+		this.setState({
+			minutes: newMinutes
+		}, function()  {
+			if(!this.props.inputMode) {
+				this._emitChange();
+			}
+		}.bind(this));
 	},
 
 	_handleInputClick:function() {

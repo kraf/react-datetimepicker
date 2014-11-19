@@ -15,13 +15,6 @@ function toTimePartString(timepart) {
 
 var TimePicker = React.createClass({
 
-	getInitialState() {
-		return {
-			hours: 0,
-			minutes: 0
-		};
-	},
-
 	render() {
 		return <div className="time-picker">
 			<div className="hours">
@@ -31,9 +24,9 @@ var TimePicker = React.createClass({
 					ref="hours" 
 					min={0} 
 					max={23} 
-					value={this.state.hours} 
+					value={this.getHours()} 
 					onChange={this._handleChange} />
-				<span>{toTimePartString(this.state.hours)}</span>
+				<span>{toTimePartString(this.getHours())}</span>
 			</div>
 
 			<div className="minutes">
@@ -43,35 +36,26 @@ var TimePicker = React.createClass({
 					ref="minutes" 
 					min={0} 
 					max={59} 
-					value={this.state.minutes} 
+					value={this.getMinutes()} 
 					onChange={this._handleChange} />
-				<span>{toTimePartString(this.state.minutes)}</span>
+				<span>{toTimePartString(this.getMinutes())}</span>
 			</div>
 		</div>;
 	},
 
-	getValue() {
-		return this.state.hours * 60 + this.state.minutes;
+	getHours() {
+		return Math.floor(this.props.minutes / 60);
 	},
 
-	setValue(minutesParam) {
-		var hours = Math.floor(minutesParam / 60);
-		var minutes = minutesParam % 60;
-
-		this.setState({
-			hours: hours,
-			minutes: minutes
-		});
+	getMinutes() {
+		return this.props.minutes % 60;
 	},
 
 	_handleChange() {
 		var hours = parseInt(this.refs.hours.getDOMNode().value, 10);
 		var minutes = parseInt(this.refs.minutes.getDOMNode().value, 10);
 
-		this.setState({
-			hours: hours,
-			minutes: minutes
-		}, this.props.onChange);
+		this.props.onChange(hours * 60 + minutes);
 	}
 });
 
