@@ -124,7 +124,7 @@ var DateTimePicker = React.createClass({
 		}
 
 		var selectedDate = this.state.selectedDate.clone().startOf('day');
-		if(this.props.time) {
+		if(this.props.time && this.refs.timePicker) {
 			var minutes = this.refs.timePicker.getValue();
 			selectedDate.add(minutes, 'minutes');
 		}
