@@ -147,14 +147,14 @@ var DateTimePicker = React.createClass({
 	setValue(date) {
 		var momentDate = date._isAMomentObject ? date : moment(date);
 
-		this.setState({
-			selectedDate: momentDate.clone().startOf('day')
-		});
-
 		if(this.props.time) {
 			var minutes = momentDate.hours() * 60 + momentDate.minutes();
 			this.refs.timePicker.setValue(minutes);
 		}
+
+		this.setState({
+			selectedDate: momentDate.clone().startOf('day')
+		});
 	},
 
 	_getClass() {
