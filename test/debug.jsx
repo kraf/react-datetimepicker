@@ -6,6 +6,6 @@ var DatePicker = require('../src/DateTimePicker');
 var moment = require("moment");
 
 window.datePicker = React.render(
-	<DatePicker onChange={console.log.bind(console)} selectedDate={moment().startOf('day')} inputMode={false} time={false} />,
+	<DatePicker onChange={console.log.bind(console)} selectedDate={moment().startOf('day')} inputMode={false} time={true} />,
 	document.getElementById('container')
 );

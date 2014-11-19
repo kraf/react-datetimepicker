@@ -4,8 +4,6 @@
 
 var React = require("react");
 
-var DAY_MINUTES = 60 * 24;
-
 function toTimePartString(timepart) {
 	var s = timepart.toString();
 	if(s.length === 1) {
@@ -54,6 +52,16 @@ var TimePicker = React.createClass({displayName: 'TimePicker',
 
 	getValue:function() {
 		return this.state.hours * 60 + this.state.minutes;
+	},
+
+	setValue:function(minutesParam) {
+		var hours = Math.floor(minutesParam / 60);
+		var minutes = minutesParam % 60;
+
+		this.setState({
+			hours: hours,
+			minutes: minutes
+		});
 	},
 
 	_handleChange:function() {

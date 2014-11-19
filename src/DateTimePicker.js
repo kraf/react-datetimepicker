@@ -14,7 +14,6 @@ var DateTimePicker = React.createClass({
 		return {
 			currentMonth: moment(),
 			visible: !this.props.inputMode,
-			minutes: 0,
 			selectedDate: this.props.selectedDate
 		};
 	},
@@ -124,9 +123,10 @@ var DateTimePicker = React.createClass({
 			return null;
 		}
 
-		var selectedDate = this.state.selectedDate.clone();
+		var selectedDate = this.state.selectedDate.clone().startOf('day');
 		if(this.props.time) {
-			selectedDate.add(this.state.minutes, 'minutes');
+			var minutes = this.refs.timePicker.getValue();
+			selectedDate.add(minutes, 'minutes');
 		}
 
 		return selectedDate;
@@ -142,6 +142,19 @@ var DateTimePicker = React.createClass({
 			}
 		}
 		return value;
+	},
+
+	setValue(date) {
+		var momentDate = date._isAMomentObject ? date : moment(date);
+
+		this.setState({
+			selectedDate: momentDate.clone().startOf('day')
+		});
+
+		if(this.props.time) {
+			var minutes = momentDate.hours() * 60 + momentDate.minutes();
+			this.refs.timePicker.setValue(minutes);
+		}
 	},
 
 	_getClass() {
@@ -175,15 +188,9 @@ var DateTimePicker = React.createClass({
 	},
 
 	_handleTimeChange() {
-		var minutes = this.refs.timePicker.getValue();
-		if(minutes >= 24*60) {
-			throw new Error("The returned amount of minutes would change the date.");
+		if(!this.props.inputMode) {
+			this._emitChange();
 		}
-		this.setState({ minutes: minutes }, () => {
-			if(!this.props.inputMode) {
-				this._emitChange();
-			}
-		});
 	},
 
 	_handleInputClick() {
