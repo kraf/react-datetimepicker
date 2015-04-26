@@ -134,6 +134,12 @@ var DateTimePicker = React.createClass({
         }
     },
 
+    setCurrentMonth(month) {
+        this.setState({
+            currentMonth: moment(month)
+        });
+    },
+    
     getValue() {
         if(!this.state.selectedDate) {
             return null;
