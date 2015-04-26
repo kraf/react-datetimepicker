@@ -5,7 +5,33 @@ var React = require('react');
 var DatePicker = require('../src/DateTimePicker');
 var moment = require("moment");
 
+var Test = React.createClass({
+    
+    getInitialState() {
+        var self = this;
+        window.setMonth = function(m) {
+            self.refs.dp.setCurrentMonth(m);
+        };
+        
+        return {
+            value: new Date()
+        };
+    },
+    
+    render() {
+        return <DatePicker onChange={this._handleDateChange}
+                           ref="dp"
+                           value={this.state.value}
+                           inputMode={false}
+                           time={true} />;
+    },
+
+    _handleDateChange(newDate) {
+        this.setState({value: newDate});
+    }
+})
+
 window.datePicker = React.render(
-	<DatePicker onChange={console.log.bind(console)} selectedDate={moment()} inputMode={false} time={true} />,
-	document.getElementById('container')
+    <Test />,
+    document.getElementById('container')
 );
