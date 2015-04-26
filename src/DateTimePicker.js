@@ -12,15 +12,14 @@ var DateTimePicker = React.createClass({
 
     getInitialState() {
         var minutes = 0;
-        var selectedDate = this.props.selectedDate;
+        var selectedDate = moment(this.props.value);
         if(selectedDate) {
             minutes = selectedDate.hours() * 60 + selectedDate.minutes();
         }
 
         return {
-            currentMonth: moment(),
+            currentMonth: selectedDate,
             visible: !this.props.inputMode,
-            selectedDate: selectedDate,
             minutes: minutes
         };
     },
@@ -55,6 +54,9 @@ var DateTimePicker = React.createClass({
                                      onChange={this._handleTimeChange} />;
         }
 
+        var selectedDate = (this.props.inputMode && this.state.visible) ?
+                           this.state.selectedDate : moment(this.props.value);
+        
         var datePicker = (
             <div className={this._getClass()} onClick={this._handleClick}>
                 <div className="month-header">
@@ -75,7 +77,7 @@ var DateTimePicker = React.createClass({
                         </thead>
                         <Days month={this.state.currentMonth}
                               weekStart={this.props.weekStart}
-                              selectedDate={this.state.selectedDate}
+                              selectedDate={selectedDate}
                               dateValidator={this.props.dateValidator}
                               onDayClick={this._handleDayChange} />
                     </table>
@@ -110,14 +112,6 @@ var DateTimePicker = React.createClass({
     componentWillReceiveProps: function(nextProps) {
         var updatedState = {};
 
-        if(this.props.selectedDate !== nextProps.selectedDate) {
-            if(nextProps.selectedDate) {
-                updatedState.selectedDate = nextProps.selectedDate;
-                updatedState.minutes =
-                nextProps.selectedDate.hours() * 60 +
-                nextProps.selectedDate.minutes();
-            }
-        }
         if(this.props.inputMode && !nextProps.inputMode) {
             updatedState.visible = true;
         }
@@ -150,11 +144,11 @@ var DateTimePicker = React.createClass({
             selectedDate.add(this.state.minutes, 'minutes');
         }
 
-        return selectedDate;
+        return selectedDate.toDate();
     },
 
     getFormattedValue() {
-        var value = this.getValue();
+        var value = moment(this.getValue());
         if(value) {
             if(!this.props.time && this.props.dateFormat) {
                 value = value.format(this.props.dateFormat);
@@ -207,15 +201,18 @@ var DateTimePicker = React.createClass({
 
     _handleInputClick() {
         if(this.state.visible) {
-            this.setState({ visible: false }, this._emitChange);
+            this.setState({visible: false}, this._emitChange);
         } else {
-            this.setState({ visible: true });
+            this.setState({
+                visible: true,
+                selectedDate: this.props.value
+            });
         }
     },
 
     _handleOutsideClick() {
         if(this.state.visible) {
-            this.setState({ visible: false }, this._emitChange);
+            this.setState({visible: false}, this._emitChange);
         }
     },
 
