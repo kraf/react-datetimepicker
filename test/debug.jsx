@@ -22,12 +22,13 @@ var Test = React.createClass({
         return <DatePicker onChange={this._handleDateChange}
                            ref="dp"
                            value={this.state.value}
-                           inputMode={false}
+                           inputMode={true}
                            time={true} />;
     },
 
     _handleDateChange(newDate) {
-        this.setState({value: newDate});
+        console.log(newDate);
+        /*         this.setState({value: newDate}); */
     }
 })
 

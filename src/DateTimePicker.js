@@ -18,6 +18,7 @@ var DateTimePicker = React.createClass({
         }
 
         return {
+            selectedDate: selectedDate,
             currentMonth: selectedDate,
             visible: !this.props.inputMode,
             minutes: minutes
@@ -55,7 +56,7 @@ var DateTimePicker = React.createClass({
         }
 
         var selectedDate = (this.props.inputMode && this.state.visible) ?
-                           this.state.selectedDate : moment(this.props.value);
+                        this.state.selectedDate : moment(this.props.value);
         
         var datePicker = (
             <div className={this._getClass()} onClick={this._handleClick}>
@@ -115,6 +116,9 @@ var DateTimePicker = React.createClass({
         if(this.props.inputMode && !nextProps.inputMode) {
             updatedState.visible = true;
         }
+        if(this.props.value !== nextProps.value) {
+            updatedState.selectedDate = moment(this.props.value);
+        }
         this.setState(updatedState);
     },
 
@@ -134,21 +138,8 @@ var DateTimePicker = React.createClass({
         });
     },
     
-    getValue() {
-        if(!this.state.selectedDate) {
-            return null;
-        }
-
-        var selectedDate = this.state.selectedDate.clone().startOf('day');
-        if(this.props.time) {
-            selectedDate.add(this.state.minutes, 'minutes');
-        }
-
-        return selectedDate.toDate();
-    },
-
     getFormattedValue() {
-        var value = moment(this.getValue());
+        var value = moment(this.props.value);
         if(value) {
             if(!this.props.time && this.props.dateFormat) {
                 value = value.format(this.props.dateFormat);
@@ -205,7 +196,7 @@ var DateTimePicker = React.createClass({
         } else {
             this.setState({
                 visible: true,
-                selectedDate: this.props.value
+                selectedDate: moment(this.props.value)
             });
         }
     },
@@ -218,7 +209,7 @@ var DateTimePicker = React.createClass({
 
     _emitChange() {
         if(typeof this.props.onChange === 'function' && this.state.selectedDate) {
-            this.props.onChange(this.getValue());
+            this.props.onChange(this.state.selectedDate);
         }
     },
 
