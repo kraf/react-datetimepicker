@@ -1,19 +1,17 @@
-/** @jsx React.DOM */
-
 'use strict';
 
-var React = require('react');
+const React = require('react');
 
 function toTimePartString(timepart) {
-    var s = timepart.toString();
+    const s = timepart.toString();
     if(s.length === 1) {
-        return "0" + s;
+        return '0' + s;
     } else {
         return s;
     }
 }
 
-var TimePicker = React.createClass({
+const TimePicker = React.createClass({
 
     render() {
         return (
@@ -52,8 +50,8 @@ var TimePicker = React.createClass({
     },
 
     _handleChange() {
-        var hours = parseInt(this.refs.hours.getDOMNode().value, 10);
-        var minutes = parseInt(this.refs.minutes.getDOMNode().value, 10);
+        const hours = parseInt(this.refs.hours.getDOMNode().value, 10);
+        const minutes = parseInt(this.refs.minutes.getDOMNode().value, 10);
 
         this.props.onChange(hours * 60 + minutes);
     }

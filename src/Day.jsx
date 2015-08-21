@@ -1,18 +1,18 @@
-/** @jsx React.DOM */
-
 'use strict';
 
-var React = require('react');
+const React = require('react');
 
-var Day = React.createClass({
+const Day = React.createClass({
     render() {
-        return <td className={this._getClass()} onClick={this._handleDayClick}>
-            {this.props.date.date()}
-        </td>;
+        return (
+            <td className={this._getClass()} onClick={this._handleDayClick}>
+                {this.props.date.date()}
+            </td>
+        );
     },
 
     _getClass() {
-        var classes = 'day';
+        let classes = 'day';
         if(this.props.cssClass) {
             classes += ' ' + this.props.cssClass;
         }

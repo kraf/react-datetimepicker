@@ -1,241 +1,243 @@
-/** @jsx React.DOM */
+'use strict';
 
-"use strict";
+var moment = require('moment');
+var React = require('react');
 
-var moment = require("moment");
-var React = require("react");
+var Days = require('./Days');
+var TimePicker = require('./TimePicker');
 
-var Days = require("./Days");
-var TimePicker = require("./TimePicker");
+var DateTimePicker = React.createClass({
+    displayName: 'DateTimePicker',
 
-var DateTimePicker = React.createClass({displayName: 'DateTimePicker',
+    getInitialState: function getInitialState() {
+        var selectedDate = moment(this.props.value);
+        var minutes = selectedDate ? selectedDate.hours() * 60 + selectedDate.minutes() : 0;
 
-	getInitialState:function() {
-		var minutes = 0;
-		var selectedDate = this.props.selectedDate;
-		if(selectedDate) {
-			minutes = selectedDate.hours() * 60 + selectedDate.minutes();
-		}
+        return {
+            selectedDate: selectedDate,
+            currentMonth: selectedDate,
+            visible: !this.props.inputMode,
+            minutes: minutes
+        };
+    },
 
-		return {
-			currentMonth: moment(),
-			visible: !this.props.inputMode,
-			selectedDate: selectedDate,
-			minutes: minutes
-		};
-	},
+    getDefaultProps: function getDefaultProps() {
+        return {
+            weekStart: 1, // Monday
+            time: true,
+            inputMode: true,
+            dateTimeFormat: 'YYYY-MM-DD HH:mm',
+            dateFormat: 'YYYY-MM-DD',
+            value: new Date()
+        };
+    },
 
-	getDefaultProps:function() {
-		return {
-			weekStart: 1, // Monday
-			time: true,
-			inputMode: true,
-			dateTimeFormat: 'YYYY-MM-DD HH:mm',
-			dateFormat: 'YYYY-MM-DD'
-		};
-	},
+    render: function render() {
+        var weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' // weekStart: 0
+        ];
+        for (var ii = 0; ii < this.props.weekStart; ii++) {
+            weekDays.push(weekDays.shift());
+        }
 
-	render:function() {
-		var weekDays = [
-			"Su", "Mo", "Tu", "We", "Th", "Fr", "Sa"  // weekStart: 0
-		];
-		for(var ii = 0; ii < this.props.weekStart; ii++) {
-			weekDays.push(weekDays.shift());
-		}
+        var dayColumnHeaderCaptions = weekDays.map(function (day) {
+            return React.createElement(
+                'th',
+                { key: day },
+                day
+            );
+        });
 
-		var dayColumnHeaderCaptions = weekDays.map(function(day)  {
-			return React.createElement("th", {key: day}, day);
-		});
+        var timePicker = this.props.time ? React.createElement(TimePicker, { minutes: this.state.minutes,
+            ref: 'timePicker',
+            onChange: this._handleTimeChange }) : null;
 
-		var timePicker = null;
-		if(this.props.time) {
-			timePicker = React.createElement(TimePicker, {
-				minutes: this.state.minutes, 
-				ref: "timePicker", 
-				onChange: this._handleTimeChange});
-		}
+        var selectedDate = this.props.inputMode && this.state.visible ? this.state.selectedDate : moment(this.props.value);
 
-		var datePicker = React.createElement("div", {className: this._getClass(), onClick: this._handleClick}, 
-			React.createElement("div", {className: "month-header"}, 
-				React.createElement("button", {className: "previous-month", onClick: this._handlePrev}, 
-					"<"
-				), 
-				React.createElement("div", {className: "month-label"}, 
-					this.state.currentMonth.format('MMMM YYYY')
-				), 
-				React.createElement("button", {className: "next-month", onClick: this._handleNext}, 
-					">"
-				)
-			), 
-			React.createElement("div", null, 
-			React.createElement("table", {className: "days"}, 
-				React.createElement("thead", null, 
-					React.createElement("tr", null, dayColumnHeaderCaptions)
-				), 
-				React.createElement(Days, {
-					month: this.state.currentMonth, 
-					weekStart: this.props.weekStart, 
-					selectedDate: this.state.selectedDate, 
-					dateValidator: this.props.dateValidator, 
-					onDayClick: this._handleDayChange})
-			)
-			), 
+        var datePicker = React.createElement(
+            'div',
+            { className: this._getClass(), onClick: this._handleClick },
+            React.createElement(
+                'div',
+                { className: 'month-header' },
+                React.createElement(
+                    'button',
+                    { className: 'previous-month', onClick: this._handlePrev },
+                    '<'
+                ),
+                React.createElement(
+                    'div',
+                    { className: 'month-label' },
+                    this.state.currentMonth.format('MMMM YYYY')
+                ),
+                React.createElement(
+                    'button',
+                    { className: 'next-month', onClick: this._handleNext },
+                    '>'
+                )
+            ),
+            React.createElement(
+                'div',
+                null,
+                React.createElement(
+                    'table',
+                    { className: 'days' },
+                    React.createElement(
+                        'thead',
+                        null,
+                        React.createElement(
+                            'tr',
+                            null,
+                            dayColumnHeaderCaptions
+                        )
+                    ),
+                    React.createElement(Days, { month: this.state.currentMonth,
+                        weekStart: this.props.weekStart,
+                        selectedDate: selectedDate,
+                        dateValidator: this.props.dateValidator,
+                        onDayClick: this._handleDayChange })
+                )
+            ),
+            timePicker
+        );
 
-			timePicker
-		);
+        if (this.props.inputMode) {
+            return React.createElement(
+                'div',
+                { className: 'date-picker-wrapper' },
+                React.createElement('input', { type: 'text',
+                    onClick: this._handleInputClick,
+                    value: this.getFormattedValue(),
+                    readOnly: true }),
+                datePicker
+            );
+        } else {
+            return datePicker;
+        }
+    },
 
-		if(this.props.inputMode) {
-			return React.createElement("div", {className: "date-picker-wrapper"}, 
-				React.createElement("input", {type: "text", 
-					onClick: this._handleInputClick, 
-					value: this.getFormattedValue(), 
-					readOnly: true}), 
+    componentWillUnmount: function componentWillUnmount() {
+        if (this.state.visible) {
+            document.removeEventListener('click', this._handleOutsideClick);
+        }
+    },
 
-				datePicker
-			);
-		} else {
-			return datePicker;
-		}
-	},
+    componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        var updatedState = {};
 
-	componentWillUnmount:function() {
-		if(this.state.visible) {
-			document.removeEventListener('click', this._handleOutsideClick);
-		}
-	},
+        if (this.props.inputMode && !nextProps.inputMode) {
+            updatedState.visible = true;
+        }
+        if (this.props.value !== nextProps.value) {
+            updatedState.selectedDate = moment(this.props.value);
+        }
+        this.setState(updatedState);
+    },
 
-	componentWillReceiveProps: function(nextProps) {
-		var updatedState = {};
+    componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
+        if (prevState.visible !== this.state.visible) {
+            if (this.state.visible) {
+                document.addEventListener('click', this._handleOutsideClick);
+            } else {
+                document.removeEventListener('click', this._handleOutsideClick);
+            }
+        }
+    },
 
-		if(this.props.selectedDate !== nextProps.selectedDate) {
-			if(nextProps.selectedDate) {
-				updatedState.selectedDate = nextProps.selectedDate;
-				updatedState.minutes =
-					nextProps.selectedDate.hours() * 60 +
-					nextProps.selectedDate.minutes();
-			}
-		}
-		if(this.props.inputMode && !nextProps.inputMode) {
-			updatedState.visible = true;
-		}
-		this.setState(updatedState);
-	},
+    setCurrentMonth: function setCurrentMonth(month) {
+        this.setState({
+            currentMonth: moment(month)
+        });
+    },
 
-	componentDidUpdate:function(prevProps, prevState) {
-		if(prevState.visible !== this.state.visible) {
-			if(this.state.visible) {
-				document.addEventListener('click', this._handleOutsideClick);
-			} else {
-				document.removeEventListener('click', this._handleOutsideClick);
-			}
-		}
-	},
+    getFormattedValue: function getFormattedValue() {
+        var value = moment(this.props.value);
+        if (value) {
+            if (!this.props.time && this.props.dateFormat) {
+                value = value.format(this.props.dateFormat);
+            } else {
+                value = value.format(this.props.dateTimeFormat);
+            }
+        }
+        return value;
+    },
 
-	getValue:function() {
-		if(!this.state.selectedDate) {
-			return null;
-		}
+    _getClass: function _getClass() {
+        var classes = 'date-picker';
 
-		var selectedDate = this.state.selectedDate.clone().startOf('day');
-		if(this.props.time) {
-			selectedDate.add(this.state.minutes, 'minutes');
-		}
+        if (this.props.inputMode) {
+            classes += ' input-mode';
+        }
 
-		return selectedDate;
-	},
+        if (!this.state.visible) {
+            classes += ' hidden';
+        }
 
-	getFormattedValue:function() {
-		var value = this.getValue();
-		if(value) {
-			if(!this.props.time && this.props.dateFormat) {
-				value = value.format(this.props.dateFormat);
-			} else {
-				value = value.format(this.props.dateTimeFormat);
-			}
-		}
-		return value;
-	},
+        return classes;
+    },
 
-	setValue:function(date) {
-		var momentDate = date._isAMomentObject ? date : moment(date);
-		var minutes = momentDate.hours() * 60 + momentDate.minutes();
+    _handlePrev: function _handlePrev() {
+        this.setState({
+            currentMonth: this.state.currentMonth.clone().subtract(1, 'months')
+        });
+    },
 
-		this.setState({
-			selectedDate: momentDate.clone().startOf('day'),
-			minutes: minutes
-		});
-	},
+    _handleNext: function _handleNext() {
+        this.setState({
+            currentMonth: this.state.currentMonth.clone().add(1, 'months')
+        });
+    },
 
-	_getClass:function() {
-		var classes = "date-picker";
+    _handleClick: function _handleClick(ev) {
+        ev.nativeEvent.stopImmediatePropagation();
+    },
 
-		if(this.props.inputMode) {
-			classes += " input-mode";
-		}
+    _handleTimeChange: function _handleTimeChange(newMinutes) {
+        var _this = this;
 
-		if(!this.state.visible) {
-			classes += " hidden";
-		}
+        this.setState({
+            minutes: newMinutes
+        }, function () {
+            if (!_this.props.inputMode) {
+                _this._emitChange();
+            }
+        });
+    },
 
-		return classes;
-	},
+    _handleInputClick: function _handleInputClick() {
+        if (this.state.visible) {
+            this.setState({ visible: false }, this._emitChange);
+        } else {
+            this.setState({
+                visible: true,
+                selectedDate: moment(this.props.value)
+            });
+        }
+    },
 
-	_handlePrev:function() {
-		this.setState({
-			currentMonth: this.state.currentMonth.clone().subtract(1, 'months')
-		});
-	},
+    _handleOutsideClick: function _handleOutsideClick() {
+        if (this.state.visible) {
+            this.setState({ visible: false }, this._emitChange);
+        }
+    },
 
-	_handleNext:function() {
-		this.setState({
-			currentMonth: this.state.currentMonth.clone().add(1, 'months')
-		});
-	},
+    _emitChange: function _emitChange() {
+        if (typeof this.props.onChange === 'function' && this.state.selectedDate) {
+            this.props.onChange(this.state.selectedDate);
+        }
+    },
 
-	_handleClick:function(ev) {
-		ev.nativeEvent.stopImmediatePropagation();
-	},
+    _handleDayChange: function _handleDayChange(date) {
+        var _this2 = this;
 
-	_handleTimeChange:function(newMinutes) {
-		this.setState({
-			minutes: newMinutes
-		}, function()  {
-			if(!this.props.inputMode) {
-				this._emitChange();
-			}
-		}.bind(this));
-	},
-
-	_handleInputClick:function() {
-		if(this.state.visible) {
-			this.setState({ visible: false }, this._emitChange);
-		} else {
-			this.setState({ visible: true });
-		}
-	},
-
-	_handleOutsideClick:function() {
-		if(this.state.visible) {
-			this.setState({ visible: false }, this._emitChange);
-		}
-	},
-
-	_emitChange:function() {
-		if(typeof this.props.onChange === 'function' && this.state.selectedDate) {
-			this.props.onChange(this.getValue());
-		}
-	},
-
-	_handleDayChange:function(date) {
-		this.setState({ selectedDate: date }, function()  {
-			if(!this.props.inputMode) {
-				this._emitChange();
-			} else if(!this.props.time) {
-				this._emitChange();
-				this.setState({ visible: false });
-			}
-		}.bind(this));
-	}
+        this.setState({ selectedDate: date }, function () {
+            if (!_this2.props.inputMode) {
+                _this2._emitChange();
+            } else if (!_this2.props.time) {
+                _this2._emitChange();
+                _this2.setState({ visible: false });
+            }
+        });
+    }
 });
 
 module.exports = DateTimePicker;

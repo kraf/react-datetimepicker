@@ -1,21 +1,17 @@
-/** @jsx React.DOM */
-
 'use strict';
 
-var moment = require('moment');
-var React = require('react');
+const moment = require('moment');
+const React = require('react');
 
-var Days = require('./Days');
-var TimePicker = require('./TimePicker');
+const Days = require('./Days');
+const TimePicker = require('./TimePicker');
 
-var DateTimePicker = React.createClass({
+const DateTimePicker = React.createClass({
 
     getInitialState() {
-        var minutes = 0;
-        var selectedDate = moment(this.props.value);
-        if(selectedDate) {
-            minutes = selectedDate.hours() * 60 + selectedDate.minutes();
-        }
+        const selectedDate = moment(this.props.value);
+        const minutes = selectedDate ?
+                  selectedDate.hours() * 60 + selectedDate.minutes() : 0;
 
         return {
             selectedDate: selectedDate,
@@ -37,28 +33,26 @@ var DateTimePicker = React.createClass({
     },
 
     render() {
-        var weekDays = [
+        const weekDays = [
             'Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'  // weekStart: 0
         ];
-        for(var ii = 0; ii < this.props.weekStart; ii++) {
+        for(let ii = 0; ii < this.props.weekStart; ii++) {
             weekDays.push(weekDays.shift());
         }
 
-        var dayColumnHeaderCaptions = weekDays.map(day => {
+        const dayColumnHeaderCaptions = weekDays.map(day => {
             return <th key={day}>{day}</th>;
         });
 
-        var timePicker = null;
-        if(this.props.time) {
-            timePicker = <TimePicker minutes={this.state.minutes}
-                                     ref="timePicker" 
-                                     onChange={this._handleTimeChange} />;
-        }
+        const timePicker = this.props.time ?
+        <TimePicker minutes={this.state.minutes}
+                    ref="timePicker" 
+                    onChange={this._handleTimeChange} /> : null;
 
-        var selectedDate = (this.props.inputMode && this.state.visible) ?
-                        this.state.selectedDate : moment(this.props.value);
+        const selectedDate = (this.props.inputMode && this.state.visible) ?
+        this.state.selectedDate : moment(this.props.value);
         
-        var datePicker = (
+        const datePicker = (
             <div className={this._getClass()} onClick={this._handleClick}>
                 <div className="month-header">
                     <button className="previous-month" onClick={this._handlePrev}>
@@ -111,7 +105,7 @@ var DateTimePicker = React.createClass({
     },
 
     componentWillReceiveProps: function(nextProps) {
-        var updatedState = {};
+        const updatedState = {};
 
         if(this.props.inputMode && !nextProps.inputMode) {
             updatedState.visible = true;
@@ -139,7 +133,7 @@ var DateTimePicker = React.createClass({
     },
     
     getFormattedValue() {
-        var value = moment(this.props.value);
+        let value = moment(this.props.value);
         if(value) {
             if(!this.props.time && this.props.dateFormat) {
                 value = value.format(this.props.dateFormat);
@@ -151,7 +145,7 @@ var DateTimePicker = React.createClass({
     },
 
     _getClass() {
-        var classes = 'date-picker';
+        let classes = 'date-picker';
 
         if(this.props.inputMode) {
             classes += ' input-mode';

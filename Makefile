@@ -8,4 +8,4 @@ watchify:
 
 build:
 	rm -f dist/*.js
-	node_modules/.bin/jsx --harmony src/ dist/
+	node_modules/.bin/babel -d dist/ src/
