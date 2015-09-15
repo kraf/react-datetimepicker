@@ -15,6 +15,7 @@ plugins.push(new webpack.NoErrorsPlugin());
 
 module.exports = {
     entry: entry,
+    devtool: 'eval',
     output: {
         filename: 'client.js'
     },

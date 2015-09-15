@@ -10,15 +10,7 @@ var DateTimePicker = React.createClass({
     displayName: 'DateTimePicker',
 
     getInitialState: function getInitialState() {
-        var selectedDate = moment(this.props.value);
-        var minutes = selectedDate ? selectedDate.hours() * 60 + selectedDate.minutes() : 0;
-
-        return {
-            selectedDate: selectedDate,
-            currentMonth: selectedDate,
-            visible: !this.props.inputMode,
-            minutes: minutes
-        };
+        return this._deriveState();
     },
 
     getDefaultProps: function getDefaultProps() {
@@ -122,15 +114,14 @@ var DateTimePicker = React.createClass({
     },
 
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
-        var updatedState = {};
-
+        // XXX what to do about this? it's unlikely someone will do this
         if (this.props.inputMode && !nextProps.inputMode) {
-            updatedState.visible = true;
+            this.setState({ visible: true });
         }
+
         if (this.props.value !== nextProps.value) {
-            updatedState.selectedDate = moment(this.props.value);
+            this.setState(this._deriveState());
         }
-        this.setState(updatedState);
     },
 
     componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
@@ -159,6 +150,18 @@ var DateTimePicker = React.createClass({
             }
         }
         return value;
+    },
+
+    _deriveState: function _deriveState() {
+        var selectedDate = moment(this.props.value);
+        var minutes = selectedDate ? selectedDate.hours() * 60 + selectedDate.minutes() : 0;
+
+        return {
+            selectedDate: selectedDate,
+            currentMonth: selectedDate,
+            visible: !this.props.inputMode,
+            minutes: minutes
+        };
     },
 
     _getClass: function _getClass() {
@@ -208,8 +211,7 @@ var DateTimePicker = React.createClass({
             this.setState({ visible: false }, this._emitChange);
         } else {
             this.setState({
-                visible: true,
-                selectedDate: moment(this.props.value)
+                visible: true
             });
         }
     },
@@ -220,9 +222,10 @@ var DateTimePicker = React.createClass({
         }
     },
 
-    _emitChange: function _emitChange() {
-        if (typeof this.props.onChange === 'function' && this.state.selectedDate) {
-            this.props.onChange(this.state.selectedDate);
+    // TODO emit change is the hard part, half-done
+    _emitChange: function _emitChange(date) {
+        if (typeof this.props.onChange === 'function' && date) {
+            this.props.onChange(date);
         }
     },
 
@@ -231,9 +234,9 @@ var DateTimePicker = React.createClass({
 
         this.setState({ selectedDate: date }, function () {
             if (!_this2.props.inputMode) {
-                _this2._emitChange();
+                _this2._emitChange(date.toDate());
             } else if (!_this2.props.time) {
-                _this2._emitChange();
+                _this2._emitChange(date.toDate());
                 _this2.setState({ visible: false });
             }
         });

@@ -3,34 +3,54 @@
 
 var React = require('react');
 var DatePicker = require('../src/DateTimePicker');
-var moment = require("moment");
+var moment = require('moment');
 
 var Test = React.createClass({
     
     getInitialState() {
-        var self = this;
-        window.setMonth = function(m) {
-            self.refs.dp.setCurrentMonth(m);
-        };
-        
         return {
-            value: new Date()
+            value: new Date(2014, 1, 2, 14, 0)
         };
     },
     
     render() {
-        return <DatePicker onChange={this._handleDateChange}
-                           ref="dp"
-                           value={this.state.value}
-                           inputMode={true}
-                           time={true} />;
+        return (
+            <div>
+            <DatePicker onChange={this._handleDateChange}
+            value={this.state.value}
+            inputMode={true}
+            time={false} />
+            
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            <br />
+            
+            <DatePicker onChange={this._handleDateChange}
+                        value={this.state.value}
+                        inputMode={false}
+                        time={false} />
+            </div>
+        );
+
     },
 
     _handleDateChange(newDate) {
-        console.log(newDate);
-        /*         this.setState({value: newDate}); */
+        console.log('onChange', newDate);
+        this.setState({value: newDate});
     }
-})
+});
 
 window.datePicker = React.render(
     <Test />,
