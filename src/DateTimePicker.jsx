@@ -116,7 +116,6 @@ const DateTimePicker = React.createClass({
         
         if(this.props.value !== nextProps.value) {
             nextState.currentMonth = nextState.selectedDate;
-            console.log('value changed', nextState);
             this.setState(nextState);
         }
     },
