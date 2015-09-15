@@ -132,10 +132,12 @@ const DateTimePicker = React.createClass({
         }
     },
 
-    setCurrentMonth(month) {
-        this.setState({
-            currentMonth: moment(month)
-        });
+    getFormattedValue() {
+        if(!this.props.time && this.props.dateFormat) {
+            return moment(this.props.value).format(this.props.dateFormat);
+        } else {
+            return moment(this.props.value).format(this.props.dateTimeFormat);
+        }
     },
     
     _getCurrentValue() {
