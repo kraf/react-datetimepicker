@@ -5,6 +5,12 @@ Simple datetimepicker for use with React.js. The only dependencies are _moment_ 
 
 ![Screenshot](https://raw.githubusercontent.com/kraf/react-datetimepicker/master/screenshot.jpg)
 
+Changes
+=======
+
+* 2.0.0
+  * Breaking: switched to managed values
+
 Usage
 =====
 
