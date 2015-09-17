@@ -1,16 +1,26 @@
 'use strict';
 
+// TODO 'current' should be renamed to 'transient'
+
 var moment = require('moment');
 var React = require('react');
 
 var Days = require('./Days');
 var TimePicker = require('./TimePicker');
 
+var KEYS = {
+    RETURN: 13,
+    ESC: 27,
+    TAB: 9
+};
+
 var DateTimePicker = React.createClass({
     displayName: 'DateTimePicker',
 
     getInitialState: function getInitialState() {
-        return this._deriveState();
+        var initialState = this._deriveState();
+        initialState.currentMonth = initialState.selectedDate;
+        return initialState;
     },
 
     getDefaultProps: function getDefaultProps() {
@@ -43,7 +53,7 @@ var DateTimePicker = React.createClass({
             ref: 'timePicker',
             onChange: this._handleTimeChange }) : null;
 
-        var selectedDate = this.props.inputMode && this.state.visible ? this.state.selectedDate : moment(this.props.value);
+        var selectedDate = this._getCurrentValue();
 
         var datePicker = React.createElement(
             'div',
@@ -98,7 +108,7 @@ var DateTimePicker = React.createClass({
                 { className: 'date-picker-wrapper' },
                 React.createElement('input', { type: 'text',
                     onClick: this._handleInputClick,
-                    value: this.getFormattedValue(),
+                    value: this._getFormattedCurrentValue(),
                     readOnly: true }),
                 datePicker
             );
@@ -109,57 +119,75 @@ var DateTimePicker = React.createClass({
 
     componentWillUnmount: function componentWillUnmount() {
         if (this.state.visible) {
-            document.removeEventListener('click', this._handleOutsideClick);
+            document.removeEventListener('click', this._closeInput);
+            document.removeEventListener('keydown', this._handleKeyDown);
         }
     },
 
     componentWillReceiveProps: function componentWillReceiveProps(nextProps) {
+        var nextState = this._deriveState(nextProps);
+
         // XXX what to do about this? it's unlikely someone will do this
         if (this.props.inputMode && !nextProps.inputMode) {
-            this.setState({ visible: true });
+            nextState.visible = true;
+            this.setState(nextState);
         }
 
         if (this.props.value !== nextProps.value) {
-            this.setState(this._deriveState());
+            nextState.currentMonth = nextState.selectedDate;
+            this.setState(nextState);
         }
     },
 
     componentDidUpdate: function componentDidUpdate(prevProps, prevState) {
         if (prevState.visible !== this.state.visible) {
             if (this.state.visible) {
-                document.addEventListener('click', this._handleOutsideClick);
+                document.addEventListener('click', this._closeInput);
+                document.addEventListener('keydown', this._handleKeyDown);
             } else {
-                document.removeEventListener('click', this._handleOutsideClick);
+                document.removeEventListener('click', this._closeInput);
+                document.removeEventListener('keydown', this._handleKeyDown);
             }
         }
-    },
-
-    setCurrentMonth: function setCurrentMonth(month) {
-        this.setState({
-            currentMonth: moment(month)
-        });
     },
 
     getFormattedValue: function getFormattedValue() {
-        var value = moment(this.props.value);
-        if (value) {
-            if (!this.props.time && this.props.dateFormat) {
-                value = value.format(this.props.dateFormat);
-            } else {
-                value = value.format(this.props.dateTimeFormat);
-            }
+        if (!this.props.time && this.props.dateFormat) {
+            return moment(this.props.value).format(this.props.dateFormat);
+        } else {
+            return moment(this.props.value).format(this.props.dateTimeFormat);
         }
-        return value;
     },
 
-    _deriveState: function _deriveState() {
-        var selectedDate = moment(this.props.value);
+    _getCurrentValue: function _getCurrentValue() {
+        if (this.props.inputMode && this.state.visible) {
+            var date = this.state.selectedDate;
+            return date.startOf('day').add(this.state.minutes, 'minutes');
+        } else {
+            return moment(this.props.value);
+        }
+    },
+
+    _getFormattedCurrentValue: function _getFormattedCurrentValue() {
+        var value = this._getCurrentValue();
+        if (!this.props.time && this.props.dateFormat) {
+            return value.format(this.props.dateFormat);
+        } else {
+            return value.format(this.props.dateTimeFormat);
+        }
+    },
+
+    _deriveState: function _deriveState(props) {
+        if (!props) {
+            props = this.props;
+        }
+
+        var selectedDate = moment(props.value);
         var minutes = selectedDate ? selectedDate.hours() * 60 + selectedDate.minutes() : 0;
 
         return {
             selectedDate: selectedDate,
-            currentMonth: selectedDate,
-            visible: !this.props.inputMode,
+            visible: !props.inputMode,
             minutes: minutes
         };
     },
@@ -207,18 +235,48 @@ var DateTimePicker = React.createClass({
     },
 
     _handleInputClick: function _handleInputClick() {
+        var _this2 = this;
+
+        var currentValue = this._getCurrentValue().toDate();
+
+        var nextState = this._deriveState();
+
         if (this.state.visible) {
-            this.setState({ visible: false }, this._emitChange);
-        } else {
-            this.setState({
-                visible: true
+            nextState.visible = false;
+            this.setState(nextState, function () {
+                return _this2._emitChange(currentValue);
             });
+        } else {
+            nextState.visible = true;
+            this.setState(nextState);
         }
     },
 
-    _handleOutsideClick: function _handleOutsideClick() {
+    _closeInput: function _closeInput() {
+        var _this3 = this;
+
         if (this.state.visible) {
-            this.setState({ visible: false }, this._emitChange);
+            (function () {
+                var currentValue = _this3._getCurrentValue().toDate();
+
+                var nextState = _this3._deriveState();
+                nextState.visible = false;
+
+                _this3.setState(nextState, function () {
+                    return _this3._emitChange(currentValue);
+                });
+            })();
+        }
+    },
+
+    _handleKeyDown: function _handleKeyDown(e) {
+        e.preventDefault();
+
+        switch (e.which) {
+            case KEYS.ESC:
+            case KEYS.TAB:
+                this._closeInput();
+                return;
         }
     },
 
@@ -230,16 +288,23 @@ var DateTimePicker = React.createClass({
     },
 
     _handleDayChange: function _handleDayChange(date) {
-        var _this2 = this;
+        var _this4 = this;
 
-        this.setState({ selectedDate: date }, function () {
-            if (!_this2.props.inputMode) {
-                _this2._emitChange(date.toDate());
-            } else if (!_this2.props.time) {
-                _this2._emitChange(date.toDate());
-                _this2.setState({ visible: false });
-            }
-        });
+        if (!this.props.inputMode) {
+            this._emitChange(date.toDate());
+            return;
+        }
+
+        if (!this.props.time) {
+            var nextState = this._deriveState();
+            nextState.visible = false;
+            this.setState(nextState, function () {
+                _this4._emitChange(date.toDate());
+            });
+            return;
+        }
+
+        this.setState({ selectedDate: date });
     }
 });
 
