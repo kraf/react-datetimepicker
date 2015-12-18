@@ -3,8 +3,6 @@ About
 
 Simple datetimepicker for use with React.js. The only dependencies are _moment_ and _React_. The styling is minimal and you will most likely have to customize it.
 
-![Screenshot](https://raw.githubusercontent.com/kraf/react-datetimepicker/master/screenshot.jpg)
-
 Changes
 =======
 
