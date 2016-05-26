@@ -25,7 +25,6 @@ var DateTimePicker = React.createClass({
 
     getDefaultProps: function getDefaultProps() {
         return {
-            localWeekDays: null,
             weekStart: 1, // Monday
             time: true,
             inputMode: true,
@@ -37,8 +36,7 @@ var DateTimePicker = React.createClass({
     },
 
     render: function render() {
-        var weekDays = this.props.localWeekDays || ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' // weekStart: 0
-        ];
+        var weekDays = moment.weekdaysMin();
         for (var ii = 0; ii < this.props.weekStart; ii++) {
             weekDays.push(weekDays.shift());
         }
