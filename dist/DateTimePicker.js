@@ -30,13 +30,13 @@ var DateTimePicker = React.createClass({
             inputMode: true,
             dateTimeFormat: 'YYYY-MM-DD HH:mm',
             dateFormat: 'YYYY-MM-DD',
-            value: new Date()
+            value: null,
+            defaultValue: new Date(),
         };
     },
 
     render: function render() {
-        var weekDays = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa' // weekStart: 0
-        ];
+        var weekDays = moment.weekdaysMin();
         for (var ii = 0; ii < this.props.weekStart; ii++) {
             weekDays.push(weekDays.shift());
         }
@@ -164,16 +164,16 @@ var DateTimePicker = React.createClass({
             var date = this.state.selectedDate;
             return date.startOf('day').add(this.state.minutes, 'minutes');
         } else {
-            return moment(this.props.value);
+            return this.props.value && moment(this.props.value);
         }
     },
 
     _getFormattedCurrentValue: function _getFormattedCurrentValue() {
         var value = this._getCurrentValue();
         if (!this.props.time && this.props.dateFormat) {
-            return value.format(this.props.dateFormat);
+            return value && value.format(this.props.dateFormat);
         } else {
-            return value.format(this.props.dateTimeFormat);
+            return value && value.format(this.props.dateTimeFormat);
         }
     },
 
@@ -182,7 +182,7 @@ var DateTimePicker = React.createClass({
             props = this.props;
         }
 
-        var selectedDate = moment(props.value);
+        var selectedDate = moment(props.value || props.defaultValue);
         var minutes = selectedDate ? selectedDate.hours() * 60 + selectedDate.minutes() : 0;
 
         return {
@@ -236,8 +236,8 @@ var DateTimePicker = React.createClass({
 
     _handleInputClick: function _handleInputClick() {
         var _this2 = this;
-
-        var currentValue = this._getCurrentValue().toDate();
+        
+        var currentValue = (this._getCurrentValue() || moment(this.props.defaultValue)).toDate();
 
         var nextState = this._deriveState();
 
@@ -257,7 +257,7 @@ var DateTimePicker = React.createClass({
 
         if (this.state.visible) {
             (function () {
-                var currentValue = _this3._getCurrentValue().toDate();
+                var currentValue = (_this3._getCurrentValue() || moment(this.props.defaultValue)).toDate();
 
                 var nextState = _this3._deriveState();
                 nextState.visible = false;
